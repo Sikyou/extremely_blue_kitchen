@@ -1,0 +1,8 @@
+show_progress 0.5 0
+
+run_program PACKAGE:remtool.sh
+
+copy_dir PACKAGE:system SYSTEM:
+
+show_progress 0.5 10
+

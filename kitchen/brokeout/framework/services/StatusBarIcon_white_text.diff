@@ -1,0 +1,11 @@
+--- classout/com/android/server/status/StatusBarIcon.smali.orig	2010-02-23 18:07:22.000000000 -0700
++++ classout/com/android/server/status/StatusBarIcon.smali	2010-02-23 18:09:50.486255051 -0700
+@@ -81,7 +81,7 @@
+     invoke-virtual {v4, v6}, Landroid/widget/TextView;->setTextSize(F)V
+ 
+     .line 46
+-    const/high16 v6, -0x100
++    const v6, -0x1
+ 
+     invoke-virtual {v4, v6}, Landroid/widget/TextView;->setTextColor(I)V
+ 

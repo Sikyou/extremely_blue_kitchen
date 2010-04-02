@@ -1,0 +1,36 @@
+#!/bin/sh
+
+if [ "${BEVERBOSE}" == "Y" ]; then
+  echo "Extracting classes.dex and decompiling..."
+fi
+mv services.jar services.zip > /dev/null 2>&1
+unzip services.zip -d services/ > /dev/null 2>&1
+mv services/classes.dex . > /dev/null 2>&1
+java -jar /opt/android-sdk-update-manager/tools/baksmali.jar -o classout/ classes.dex > /dev/null 2>&1
+rm classes.dex > /dev/null 2>&1
+
+if [ "${BEVERBOSE}" == "Y" ]; then
+  echo "Patching classes.dex..."
+fi
+patch -p0 < StatusBarIcon_white_text.diff > patch.log 2>&1
+patch -p0 < StatusBarService_white_text.diff >> patch.log 2>&1
+
+if [ "${BEVERBOSE}" == "Y" ]; then
+  echo "Recompiling classes.dex..."
+fi
+java -Xmx512M -jar /opt/android-sdk-update-manager/tools/smali.jar classout/ -o classes.dex > /dev/null 2>&1
+rm -rf classout > /dev/null 2>&1
+
+if [ "${BEVERBOSE}" == "Y" ]; then
+  echo "Compressing classes.dex and recreating services.jar..."
+fi
+mv classes.dex services/ > /dev/null 2>&1
+mv services.zip services-orig.jar > /dev/null 2>&1
+cd services > /dev/null 2>&1
+zip -9 services.zip -r * > /dev/null 2>&1
+mv services.zip ../services.jar > /dev/null 2>&1
+cd .. > /dev/null 2>&1
+rm -rf services > /dev/null 2>&1
+zipalign 4 services.jar services_new.jar > /dev/null 2>&1
+rm services.jar > /dev/null 2>&1
+mv services_new.jar services.jar > /dev/null 2>&1

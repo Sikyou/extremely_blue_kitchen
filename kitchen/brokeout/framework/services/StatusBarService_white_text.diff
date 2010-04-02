@@ -1,0 +1,35 @@
+--- classout/com/android/server/status/StatusBarService.smali.orig	2010-04-02 01:35:57.206372583 -0600
++++ classout/com/android/server/status/StatusBarService.smali	2010-04-02 01:35:30.502338197 -0600
+@@ -1020,6 +1020,10 @@
+ 
+     check-cast v7, Lcom/android/server/status/DateView;
+ 
++    const v8, -0x1
++
++    invoke-virtual {v7, v8}, Landroid/widget/TextView;->setTextColor(I)V
++
+     iput-object v7, p0, Lcom/android/server/status/StatusBarService;->mDateView:Lcom/android/server/status/DateView;
+ 
+     .line 274
+@@ -1114,6 +1118,10 @@
+ 
+     check-cast v7, Landroid/widget/TextView;
+ 
++    const v8, -0x1
++
++    invoke-virtual {v7, v8}, Landroid/widget/TextView;->setTextColor(I)V
++
+     iput-object v7, p0, Lcom/android/server/status/StatusBarService;->mSpnLabel:Landroid/widget/TextView;
+ 
+     .line 284
+@@ -1125,6 +1133,10 @@
+ 
+     check-cast v7, Landroid/widget/TextView;
+ 
++    const v8, -0x1
++
++    invoke-virtual {v7, v8}, Landroid/widget/TextView;->setTextColor(I)V
++
+     iput-object v7, p0, Lcom/android/server/status/StatusBarService;->mPlmnLabel:Landroid/widget/TextView;
+ 
+     .line 285

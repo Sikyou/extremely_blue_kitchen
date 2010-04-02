@@ -1,3 +1,24 @@
 This is the kitchen I use for extremely blue.
 All of the scripts are bash based.
-The scripts are dependant upon okteta for hex editing.
+
+The scripts use a hexediting program called bbe.
+If your distro doesn't have it, you can find it at
+http://sourceforge.net/projects/bbe-/
+
+The android sdk tools folder must be in your $PATH
+You must have the smali/backsmali scripts and jar files
+in your $PATH
+
+This kitchen uses the following programs and
+expects them to be in your $PATH
+
+zip/unzip (as provided by infozip or similar)
+patch
+bbe
+java
+zipalign
+smali/baksmali
+
+
+I will make a windows port of the scripts and
+programs at a later time.

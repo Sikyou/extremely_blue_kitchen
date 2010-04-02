@@ -1,0 +1,61 @@
+#!/bin/sh
+
+apk=`basename \`pwd\``
+
+if [ "${BEVERBOSE}" == "Y" ]; then
+  echo "Unpacking ${apk}.apk..."
+fi
+mv ${apk}.apk ${apk}.zip > /dev/null 2>&1 || exit 1
+unzip ${apk}.zip -d ${apk} > /dev/null 2>&1 || exit 1
+
+if [ "${BEVERBOSE}" == "Y" ]; then
+  echo "Copying edited images into the ${apk} tree..."
+fi
+for i in drawable drawable-finger drawable-hdpi drawable-hdpi-finger \
+         drawable-land-hdpi drawable-land-hdpi-finger
+do
+  if [ -d "image/${i}" ]; then
+    cp -f image/${i}/*.png ${apk}/res/${i}/ > /dev/null 2>&1 || exit 1
+  fi
+done
+
+#Change some colors in the backgrounds of the music app
+if [ "${BEVERBOSE}" == "Y" ]; then
+  echo "Doing Some Hex Editing..."
+fi
+TWD=`pwd`
+cd ${apk}/res/layout/ > /dev/null 2>&1 || exit 1
+bbe -e "s/\x08\x00\x00\x1c\x00\x00\x00\xff/\x08\x00\x00\x1c\xff\xff\xff\xff/" status_bar.xml -o new.status_bar.xml > /dev/null 2>&1 || exit 1
+rm status_bar.xml > /dev/null 2>&1 || exit 1
+mv new.status_bar.xml status_bar.xml > /dev/null 2>&1 || exit 1
+bbe -e "s/\x08\x00\x00\x1c\x00\x00\x00\xff/\x08\x00\x00\x1c\xff\xff\xff\xff/" status_bar_latest_event_content.xml -o new.status_bar_latest_event_content.xml > /dev/null 2>&1 || exit 1
+rm status_bar_latest_event_content.xml > /dev/null 2>&1 || exit 1
+mv new.status_bar_latest_event_content.xml status_bar_latest_event_content.xml > /dev/null 2>&1 || exit 1
+bbe -e "s/\x08\x00\x00\x1c\x00\x00\x00\xff/\x08\x00\x00\x1c\xff\xff\xff\xff/" status_bar_expanded.xml -o new.status_bar_expanded.xml > /dev/null 2>&1 || exit 1
+rm status_bar_expanded.xml> /dev/null 2>&1 || exit 1
+mv new.status_bar_expanded.xml status_bar_expanded.xml > /dev/null 2>&1 || exit 1
+cd $TWD
+
+if [ "${BEVERBOSE}" == "Y" ]; then
+  echo "Recompressing ${apk}.apk..."
+fi
+cd ${apk} > /dev/null 2>&1 || exit 1
+rm META-INF/* > /dev/null 2>&1 || exit 1
+zip ${apk}.zip -r * > /dev/null 2>&1 || exit 1
+mv ${apk}.zip ../${apk}.apk > /dev/null 2>&1 || exit 1
+cd .. > /dev/null 2>&1 || exit 1
+rm -rf ${apk} > /dev/null 2>&1 || exit 1
+mv ${apk}.zip ${apk}-orig.apk > /dev/null 2>&1 || exit 1
+
+if [ "${BEVERBOSE}" == "Y" ]; then
+  echo "Signing ${apk}.apk..."
+fi
+java -jar ../../../autosign/signapk.jar \
+          ../../../autosign/testkey.x509.pem \
+          ../../../autosign/testkey.pk8 \
+          ${apk}.apk ${apk}-new.apk > /dev/null 2>&1 || exit 1
+rm ${apk}.apk > /dev/null 2>&1 || exit 1
+mv ${apk}-new.apk ${apk}.apk > /dev/null 2>&1 || exit 1
+zipalign 4 ${apk}.apk ${apk}-new.apk > /dev/null 2>&1 || exit 1
+rm ${apk}.apk > /dev/null 2>&1 || exit 1
+mv ${apk}-new.apk ${apk}.apk > /dev/null 2>&1 || exit 1

@@ -1,0 +1,61 @@
+#!/bin/sh
+
+apk=`basename \`pwd\``
+
+if [ "${BEVERBOSE}" == "Y" ]; then
+  echo "Unpacking ${apk}.apk..."
+fi
+mv ${apk}.apk ${apk}.zip > /dev/null 2>&1 || exit 1
+unzip ${apk}.zip -d ${apk} > /dev/null 2>&1 || exit 1
+
+if [ "${BEVERBOSE}" == "Y" ]; then
+  echo "Copying edited images into the ${apk} tree..."
+fi
+for i in drawable drawable-finger drawable-hdpi drawable-hdpi-finger \
+         drawable-land-hdpi drawable-land-hdpi-finger
+do
+  if [ -d "image/${i}" ]; then
+    cp -f image/${i}/*.png ${apk}/res/${i}/ > /dev/null 2>&1 || exit 1
+  fi
+done
+
+#Change some colors in the backgrounds of the music app
+if [ "${BEVERBOSE}" == "Y" ]; then
+  echo "Doing Some Hex Editing..."
+fi
+TWD=`pwd`
+cd Music/res/color/ > /dev/null 2>&1 || exit 1
+bbe -e "s/\x80\x80\x80\xff/\x66\x3e\x29\xff/" tab_indicator_text.xml \
+    -o new.tab_indicator_text.xml > /dev/null 2>&1 || exit 1
+rm tab_indicator_text.xml > /dev/null 2>&1 || exit 1
+mv new.tab_indicator_text.xml tab_indicator_text.xml > /dev/null 2>&1 || exit 1
+cd ${TWD}/Music/res/layout-finger/ > /dev/null 2>&1 || exit 1
+bbe -e "s/\x5a\x5a\x5a\xff/\x66\x3e\x29\xff/" audio_player_common.xml \
+    -o new.audio_player_common.xml > /dev/null 2>&1 || exit 1
+rm audio_player_common.xml > /dev/null 2>&1 || exit 1
+mv new.audio_player_common.xml audio_player_common.xml > /dev/null 2>&1 || exit 1
+cd $TWD
+
+if [ "${BEVERBOSE}" == "Y" ]; then
+  echo "Recompressing ${apk}.apk..."
+fi
+cd ${apk} > /dev/null 2>&1 || exit 1
+rm META-INF/* > /dev/null 2>&1 || exit 1
+zip ${apk}.zip -r * > /dev/null 2>&1 || exit 1
+mv ${apk}.zip ../${apk}.apk > /dev/null 2>&1 || exit 1
+cd .. > /dev/null 2>&1 || exit 1
+rm -rf ${apk} > /dev/null 2>&1 || exit 1
+mv ${apk}.zip ${apk}-orig.apk > /dev/null 2>&1 || exit 1
+
+if [ "${BEVERBOSE}" == "Y" ]; then
+  echo "Signing ${apk}.apk..."
+fi
+java -jar ../../../autosign/signapk.jar \
+          ../../../autosign/testkey.x509.pem \
+          ../../../autosign/testkey.pk8 \
+          ${apk}.apk ${apk}-new.apk > /dev/null 2>&1 || exit 1
+rm ${apk}.apk > /dev/null 2>&1 || exit 1
+mv ${apk}-new.apk ${apk}.apk > /dev/null 2>&1 || exit 1
+zipalign 4 ${apk}.apk ${apk}-new.apk > /dev/null 2>&1 || exit 1
+rm ${apk}.apk > /dev/null 2>&1 || exit 1
+mv ${apk}-new.apk ${apk}.apk > /dev/null 2>&1 || exit 1

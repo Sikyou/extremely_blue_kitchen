@@ -10,6 +10,9 @@ if [ "`ls -1 | grep 'brokeout'`" == "" ]; then
   exit 1
 fi
 
+if [ "${BEVERBOSE}" == "y" ]; then BEVERBOSE="Y"; fi
+if [ "${BEVERBOSE}" == "1" ]; then BEVERBOSE="Y"; fi
+
 PROJECT_PATH="`pwd`"
 
 if [ "${BEVERBOSE}" == "Y" ]; then
@@ -62,7 +65,9 @@ cd $PROJECT_PATH/rom_orig/ > /dev/null 2>&1 || exit 1
 rm -rf cyan > /dev/null 2>&1 || exit 1
 cd $PROJECT_PATH > /dev/null 2>&1 || exit 1
 
-echo "Running edit / replace scripts and building theme structure"
+if [ "${BEVERBOSE}" == "Y" ]; then
+  echo "Running edit / replace scripts and building theme structure"
+fi
 cd $PROJECT_PATH/rom_newstruct/ > /dev/null 2>&1 || exit 1
 if [ -d "system" ]; then
   rm -rf system > /dev/null 2>&1 || exit 1

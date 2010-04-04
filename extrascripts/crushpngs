@@ -1,0 +1,8 @@
+#!/bin/sh
+
+for i in *.png
+do
+  pngcrush -rem allb -brute -reduce $i $i.new
+  rm $i
+  mv $i.new $i
+done

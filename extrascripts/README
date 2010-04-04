@@ -1,0 +1,21 @@
+These are the scripts I used to run repetative edits on files
+
+cacall ->
+     runs convertandcolorcorrect in a loop fashion
+
+covertandcolorcorrect ->
+     runs gimp with some script options to convert files to rbg and color correct
+     them after doing so.  (adds the blue)
+     **REQUIRES**
+     gimp - must be in ${PATH}
+
+crushpngs ->
+     runs pngcrush on all *.png files in a directory
+     **WARNINGS**
+     you can run this on source .9.pngs, but _DO_NOT_ run this on compiled
+     .9.png files
+     **THOUGHTS**
+     pngcrush removes unused IDAT entries in a png file.  It then optimizes the
+     remaining data.  I feel this does a far better job then optipng.
+     **REQUIRES**
+     pngcrush - must be in ${PATH}

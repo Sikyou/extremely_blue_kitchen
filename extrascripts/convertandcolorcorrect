@@ -1,0 +1,12 @@
+#!/bin/sh
+
+gimp -i -f -d -s -c -b '(let* ((image (car (gimp-file-load RUN-NONINTERACTIVE "'"$1"'" "'"$1"'"))) (drawable (car (gimp-image-get-active-layer image))))
+(if (= (car (gimp-drawable-is-indexed drawable)) TRUE)
+(begin (gimp-image-convert-rgb image)))
+(if (= (car (gimp-drawable-is-gray drawable)) TRUE)
+(begin (gimp-image-convert-rgb image)))
+(gimp-color-balance drawable 1 1 -25 0 50)
+(gimp-file-save RUN-NONINTERACTIVE image drawable "'"$1"'" "'"$1"'")
+(gimp-image-delete image)
+(gimp-quit 0)
+))'

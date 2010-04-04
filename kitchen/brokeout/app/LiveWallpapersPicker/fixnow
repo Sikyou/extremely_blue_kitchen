@@ -19,6 +19,15 @@ do
   fi
 done
 
+if [ -f "runextra" ]; then
+  if [ "${BEVERBOSE}" == "Y" ]; then
+    echo "runextra script found.  Running now..."
+    TWD=`pwd`
+    source ./runextra
+    cd $TWD
+  fi
+fi
+
 if [ "${BEVERBOSE}" == "Y" ]; then
   echo "Recompressing ${apk}.apk..."
 fi

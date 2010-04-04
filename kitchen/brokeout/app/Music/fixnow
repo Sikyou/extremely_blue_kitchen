@@ -19,22 +19,14 @@ do
   fi
 done
 
-#Change some colors in the backgrounds of the music app
-if [ "${BEVERBOSE}" == "Y" ]; then
-  echo "Doing Some Hex Editing..."
+if [ -f "runextra" ]; then
+  if [ "${BEVERBOSE}" == "Y" ]; then
+    echo "runextra script found.  Running now..."
+    TWD=`pwd`
+    source ./runextra
+    cd $TWD
+  fi
 fi
-TWD=`pwd`
-cd Music/res/color/ > /dev/null 2>&1 || exit 1
-bbe -e "s/\x80\x80\x80\xff/\x66\x3e\x29\xff/" tab_indicator_text.xml \
-    -o new.tab_indicator_text.xml > /dev/null 2>&1 || exit 1
-rm tab_indicator_text.xml > /dev/null 2>&1 || exit 1
-mv new.tab_indicator_text.xml tab_indicator_text.xml > /dev/null 2>&1 || exit 1
-cd ${TWD}/Music/res/layout-finger/ > /dev/null 2>&1 || exit 1
-bbe -e "s/\x5a\x5a\x5a\xff/\x66\x3e\x29\xff/" audio_player_common.xml \
-    -o new.audio_player_common.xml > /dev/null 2>&1 || exit 1
-rm audio_player_common.xml > /dev/null 2>&1 || exit 1
-mv new.audio_player_common.xml audio_player_common.xml > /dev/null 2>&1 || exit 1
-cd $TWD
 
 if [ "${BEVERBOSE}" == "Y" ]; then
   echo "Recompressing ${apk}.apk..."

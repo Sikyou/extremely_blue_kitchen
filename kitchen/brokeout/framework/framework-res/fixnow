@@ -19,22 +19,12 @@ do
   fi
 done
 
-#Change some colors in the backgrounds of the music app
-if [ "${BEVERBOSE}" == "Y" ]; then
-  echo "Doing Some Hex Editing..."
+if [ -f "runextra" ]; then
+  if [ "${BEVERBOSE}" == "Y" ]; then
+    echo "runextra script found.  Running now..."
+    source ./runextra
+  fi
 fi
-TWD=`pwd`
-cd ${apk}/res/layout/ > /dev/null 2>&1 || exit 1
-bbe -e "s/\x08\x00\x00\x1c\x00\x00\x00\xff/\x08\x00\x00\x1c\xff\xff\xff\xff/" status_bar.xml -o new.status_bar.xml > /dev/null 2>&1 || exit 1
-rm status_bar.xml > /dev/null 2>&1 || exit 1
-mv new.status_bar.xml status_bar.xml > /dev/null 2>&1 || exit 1
-bbe -e "s/\x08\x00\x00\x1c\x00\x00\x00\xff/\x08\x00\x00\x1c\xff\xff\xff\xff/" status_bar_latest_event_content.xml -o new.status_bar_latest_event_content.xml > /dev/null 2>&1 || exit 1
-rm status_bar_latest_event_content.xml > /dev/null 2>&1 || exit 1
-mv new.status_bar_latest_event_content.xml status_bar_latest_event_content.xml > /dev/null 2>&1 || exit 1
-bbe -e "s/\x08\x00\x00\x1c\x00\x00\x00\xff/\x08\x00\x00\x1c\xff\xff\xff\xff/" status_bar_expanded.xml -o new.status_bar_expanded.xml > /dev/null 2>&1 || exit 1
-rm status_bar_expanded.xml> /dev/null 2>&1 || exit 1
-mv new.status_bar_expanded.xml status_bar_expanded.xml > /dev/null 2>&1 || exit 1
-cd $TWD
 
 if [ "${BEVERBOSE}" == "Y" ]; then
   echo "Recompressing ${apk}.apk..."

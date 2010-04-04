@@ -1,0 +1,134 @@
+#!/bin/sh
+
+if [ "`ls -1 | grep '00_build_theme'`" != "" ]; then cd ..; fi
+if [ "`ls -1 | grep 'brokeout'`" == "" ]; then
+  echo ""
+  echo "Cannot Determine Root Build Directory"
+  echo "Please run this script from the Root Build Directory or the"
+  echo "scripts directory within the Root Build Directory."
+  echo ""
+  exit 1
+fi
+
+PROJECT_PATH="`pwd`"
+
+if [ "${BEVERBOSE}" == "Y" ]; then
+  echo "Extracting Original Cyanogen Rom"
+fi
+cd $PROJECT_PATH > /dev/null 2>&1 || exit 1
+cd rom_orig > /dev/null 2>&1 || exit 1
+unzip *.zip -d cyan/ > /dev/null 2>&1 || exit 1
+
+if [ "${BEVERBOSE}" == "Y" ]; then
+  echo "Moving APKs into editing directories"
+fi
+cd cyan/system/app > /dev/null 2>&1 || exit 1
+mv AccountAndSyncSettings.apk $PROJECT_PATH/brokeout/app/AccountAndSyncSettings/ > /dev/null 2>&1 || exit 1
+mv Bluetooth.apk $PROJECT_PATH/brokeout/app/Bluetooth/ > /dev/null 2>&1 || exit 1
+mv Browser.apk $PROJECT_PATH/brokeout/app/Browser/ > /dev/null 2>&1 || exit 1
+mv Calculator.apk $PROJECT_PATH/brokeout/app/Calculator/ > /dev/null 2>&1 || exit 1
+mv Calendar.apk $PROJECT_PATH/brokeout/app/Calendar/ > /dev/null 2>&1 || exit 1
+mv CalendarProvider.apk $PROJECT_PATH/brokeout/app/CalendarProvider/ > /dev/null 2>&1 || exit 1
+mv Camera.apk $PROJECT_PATH/brokeout/app/Camera/ > /dev/null 2>&1 || exit 1
+mv Contacts.apk $PROJECT_PATH/brokeout/app/Contacts/ > /dev/null 2>&1 || exit 1
+mv ContactsProvider.apk $PROJECT_PATH/brokeout/app/ContactsProvider/ > /dev/null 2>&1 || exit 1
+mv DeskClock.apk $PROJECT_PATH/brokeout/app/DeskClock/ > /dev/null 2>&1 || exit 1
+mv Development.apk $PROJECT_PATH/brokeout/app/Development/ > /dev/null 2>&1 || exit 1
+mv Email.apk $PROJECT_PATH/brokeout/app/Email/ > /dev/null 2>&1 || exit 1
+mv Gallery3D.apk $PROJECT_PATH/brokeout/app/Gallery3D/ > /dev/null 2>&1 || exit 1
+mv GlobalSearch.apk $PROJECT_PATH/brokeout/app/GlobalSearch/ > /dev/null 2>&1 || exit 1
+mv GoogleSearch.apk $PROJECT_PATH/brokeout/app/GoogleSearch/ > /dev/null 2>&1 || exit 1
+mv Launcher2.apk $PROJECT_PATH/brokeout/app/Launcher2/ > /dev/null 2>&1 || exit 1
+mv LiveWallpapersPicker.apk $PROJECT_PATH/brokeout/app/LiveWallpapersPicker/ > /dev/null 2>&1 || exit 1
+mv MediaProvider.apk $PROJECT_PATH/brokeout/app/MediaProvider/ > /dev/null 2>&1 || exit 1
+mv Mms.apk $PROJECT_PATH/brokeout/app/Mms/ > /dev/null 2>&1 || exit 1
+mv Music.apk $PROJECT_PATH/brokeout/app/Music/ > /dev/null 2>&1 || exit 1
+mv PackageInstaller.apk $PROJECT_PATH/brokeout/app/PackageInstaller/ > /dev/null 2>&1 || exit 1
+mv Phone.apk $PROJECT_PATH/brokeout/app/Phone/ > /dev/null 2>&1 || exit 1
+mv Settings.apk $PROJECT_PATH/brokeout/app/Settings/ > /dev/null 2>&1 || exit 1
+mv SoundRecorder.apk $PROJECT_PATH/brokeout/app/SoundRecorder/ > /dev/null 2>&1 || exit 1
+mv SpareParts.apk $PROJECT_PATH/brokeout/app/SpareParts/ > /dev/null 2>&1 || exit 1
+mv TtsService.apk $PROJECT_PATH/brokeout/app/TtsService/ > /dev/null 2>&1 || exit 1
+mv VoiceDialer.apk $PROJECT_PATH/brokeout/app/VoiceDialer/ > /dev/null 2>&1 || exit 1
+mv VpnServices.apk $PROJECT_PATH/brokeout/app/VpnServices/ > /dev/null 2>&1 || exit 1
+cd ../framework > /dev/null 2>&1 || exit 1
+mv framework-res.apk $PROJECT_PATH/brokeout/framework/framework-res/ > /dev/null 2>&1 || exit 1
+mv services.jar $PROJECT_PATH/brokeout/framework/services/ > /dev/null 2>&1 || exit 1
+
+if [ "${BEVERBOSE}" == "Y" ]; then
+  echo "Cleaning up extraction directory"
+fi
+cd $PROJECT_PATH/rom_orig/ > /dev/null 2>&1 || exit 1
+rm -rf cyan > /dev/null 2>&1 || exit 1
+cd $PROJECT_PATH > /dev/null 2>&1 || exit 1
+
+echo "Running edit / replace scripts and building theme structure"
+cd $PROJECT_PATH/rom_newstruct/ > /dev/null 2>&1 || exit 1
+if [ -d "system" ]; then
+  rm -rf system > /dev/null 2>&1 || exit 1
+fi
+mkdir -p system/app > /dev/null 2>&1 || exit 1
+mkdir -p system/framework > /dev/null 2>&1 || exit 1
+cd $PROJECT_PATH > /dev/null 2>&1 || exit 1
+
+#Run the edit scripts on all apps
+for i in AccountAndSyncSettings Bluetooth Browser Calculator Calendar CalendarProvider Camera Contacts \
+ContactsProvider DeskClock Development Email Gallery3D GlobalSearch GoogleSearch Launcher2 \
+LiveWallpapersPicker MediaProvider Mms Music PackageInstaller Phone Settings SoundRecorder SpareParts \
+TtsService VoiceDialer VpnServices
+do
+  cd $PROJECT_PATH/brokeout/app/$i > /dev/null 2>&1 || exit 1
+  ./fixnow
+  rm $i-orig.apk > /dev/null 2>&1 || exit 1
+  mv $i.apk $PROJECT_PATH/rom_newstruct/system/app/ > /dev/null 2>&1 || exit 1
+  cd $PROJECT_PATH > /dev/null 2>&1 || exit 1
+done
+
+#Run the edit script for framework-res
+cd $PROJECT_PATH/brokeout/framework/framework-res/ > /dev/null 2>&1 || exit 1
+./fixnow
+rm framework-res-orig.apk > /dev/null 2>&1 || exit 1
+mv framework-res.apk $PROJECT_PATH/rom_newstruct/system/framework/
+cd $PROJECT_PATH > /dev/null 2>&1 || exit 1
+
+#Run the edit scripts for jars in framework
+for i in services
+do
+  cd $PROJECT_PATH/brokeout/framework/$i > /dev/null 2>&1 || exit 1
+  ./fixnow
+  rm $i-orig.jar > /dev/null 2>&1 || exit 1
+  mv $i.jar $PROJECT_PATH/rom_newstruct/system/framework/ > /dev/null 2>&1 || exit 1
+  cd $PROJECT_PATH > /dev/null 2>&1 || exit 1
+done
+
+if [ "${BEVERBOSE}" == "Y" ]; then
+  echo "Building Theme Zip"
+fi
+cd $PROJECT_PATH/rom_newstruct/ > /dev/null 2>&1 || exit 1
+zip -0 $PROJECT_PATH/final/update.zip -r * > /dev/null 2>&1 || exit 1
+cd $PROJECT_PATH > /dev/null 2>&1 || exit 1
+
+if [ "${BEVERBOSE}" == "Y" ]; then
+  echo "Signing Theme Zip"
+fi
+cd $PROJECT_PATH/final/ > /dev/null 2>&1 || exit 1
+java -jar ../autosign/signapk.jar \
+          ../autosign/testkey.x509.pem \
+          ../autosign/testkey.pk8 \
+          update.zip update-new.zip > /dev/null 2>&1 || exit 1
+rm update.zip > /dev/null 2>&1 || exit 1
+mv update-new.zip update.zip > /dev/null 2>&1 || exit 1
+cd $PROJECT_PATH > /dev/null 2>&1 || exit 1
+
+if [ "${BEVERBOSE}" == "Y" ]; then
+  echo "Cleaning Up Rom Structure Directory"
+fi
+cd $PROJECT_PATH/rom_newstruct/ > /dev/null 2>&1 || exit 1
+rm -rf system > /dev/null 2>&1 || exit 1
+cd $PROJECT_PATH > /dev/null 2>&1 || exit 1
+
+echo "Theme Build Complete"
+echo "The signed update.zip is in final/"
+echo "Be sure to rename this file according to your needs"
+echo ""
+echo ""

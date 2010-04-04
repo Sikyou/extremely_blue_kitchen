@@ -1,0 +1,49 @@
+**READ THE README AND NOTES**
+
+The base kitchen resides in the kitchen/ folder.
+
+To use the kitchen, you will need to do the following.
+
+01.)  Put the original cyanogenmod rom in rom_orig
+
+02.)  Edit conf/include_app to include the exact names of apk's you wish to edit.
+      (That is, the apks that are in /system/app of the original rom.)
+      (Do not include extensions - ie .apk)
+
+03.)  Edit conf/include_framework to include the exact names of jar files you wish to edit.
+      (That is, the jars are in /system/framework of the original rom.)
+      (framework-res.apk is included by default.  As this is the basis of all themes.)
+      (Do not include extensions - ie .jar)
+
+04.)  Edit conf/whitetext, and put TRUE as the only word in it if you want white text
+      on the top bars and pulldown area.
+
+05.)  Place your edited images into the kitchen.
+      This is done in the brokeout/ directory.
+      **
+      Under apps, is all of the applications I have edited.
+      (I will add more directories now that the simple conf system is in place.)
+      In each application directory is a folder named image.
+      Inside this directory, you can place your edited images accordingly.
+      (ie, drawable, drawable-hdpi, so on.)
+      Also in each application directory is a directory named orig.
+      This directory contains all source images for each application
+      Also included is a sourcenine directory.
+      This directory contains my edited source .9.png files.
+      **
+      The same as above applies to the brokeout/framework directory, although framework-res
+      is the only apk you will do that with here.
+      Any other directories here include a fixnow and patches for jar files.
+      Please do not change these scripts or patches unless you know what you are doing.
+      Also, feel free to reuse the services directory as a base to create edit scripts
+      for other jar files.
+
+06.)  After placing your edited images and the original rom, move to the base of the kitchen
+      directory in a command prompt.  Run the following command
+      sh scripts/00_build_theme
+
+      (If you would like a verbose output during build, type the following command instead)
+      BEVERBOSE=1 sh scripts/00_build_theme
+
+07.)  When this is done running, you will have a brand new update.zip in the final/
+      directory.  Rename this to your theme name, test, and release.  Enjoy.

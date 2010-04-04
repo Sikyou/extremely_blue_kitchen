@@ -13,7 +13,7 @@ fi
 if [ "${BEVERBOSE}" == "y" ]; then BEVERBOSE="Y"; fi
 if [ "${BEVERBOSE}" == "1" ]; then BEVERBOSE="Y"; fi
 
-PROJECT_PATH="`pwd`"
+export PROJECT_PATH="`pwd`"
 
 if [ "${BEVERBOSE}" == "Y" ]; then
   echo "Extracting Original Cyanogen Rom"
@@ -77,13 +77,10 @@ mkdir -p system/framework > /dev/null 2>&1 || exit 1
 cd $PROJECT_PATH > /dev/null 2>&1 || exit 1
 
 #Run the edit scripts on all apps
-for i in AccountAndSyncSettings Bluetooth Browser Calculator Calendar CalendarProvider Camera Contacts \
-ContactsProvider DeskClock Development Email Gallery3D GlobalSearch GoogleSearch Launcher2 \
-LiveWallpapersPicker MediaProvider Mms Music PackageInstaller Phone Settings SoundRecorder SpareParts \
-TtsService VoiceDialer VpnServices
+for i in `cat $PROJECT_PATH/conf/include_app`
 do
   cd $PROJECT_PATH/brokeout/app/$i > /dev/null 2>&1 || exit 1
-  ./fixnow
+  sh ./fixnow
   rm $i-orig.apk > /dev/null 2>&1 || exit 1
   mv $i.apk $PROJECT_PATH/rom_newstruct/system/app/ > /dev/null 2>&1 || exit 1
   cd $PROJECT_PATH > /dev/null 2>&1 || exit 1
@@ -91,19 +88,21 @@ done
 
 #Run the edit script for framework-res
 cd $PROJECT_PATH/brokeout/framework/framework-res/ > /dev/null 2>&1 || exit 1
-./fixnow
+sh ./fixnow
 rm framework-res-orig.apk > /dev/null 2>&1 || exit 1
 mv framework-res.apk $PROJECT_PATH/rom_newstruct/system/framework/
 cd $PROJECT_PATH > /dev/null 2>&1 || exit 1
 
 #Run the edit scripts for jars in framework
-for i in services
+for i in `cat $PROJECT_PATH/conf/include_framework`
 do
-  cd $PROJECT_PATH/brokeout/framework/$i > /dev/null 2>&1 || exit 1
-  ./fixnow
-  rm $i-orig.jar > /dev/null 2>&1 || exit 1
-  mv $i.jar $PROJECT_PATH/rom_newstruct/system/framework/ > /dev/null 2>&1 || exit 1
-  cd $PROJECT_PATH > /dev/null 2>&1 || exit 1
+  if [ "${i}" != "framework-res" ]; then
+    cd $PROJECT_PATH/brokeout/framework/$i > /dev/null 2>&1 || exit 1
+    sh ./fixnow
+    rm $i-orig.jar > /dev/null 2>&1 || exit 1
+    mv $i.jar $PROJECT_PATH/rom_newstruct/system/framework/ > /dev/null 2>&1 || exit 1
+    cd $PROJECT_PATH > /dev/null 2>&1 || exit 1
+  fi
 done
 
 if [ "${BEVERBOSE}" == "Y" ]; then

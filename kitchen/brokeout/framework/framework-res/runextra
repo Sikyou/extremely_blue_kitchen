@@ -1,13 +1,15 @@
 #!/bin/sh
 
 #Hex edits for framework-res and white text
-if [ "${BEVERBOSE}" == "Y" ]; then
-  echo "Doing Some Hex Editing..."
+if [ "`cat ${PROJECT_PATH}/conf/whitetext`" == "TRUE" ]; then
+  if [ "${BEVERBOSE}" == "Y" ]; then
+    echo "Hex Editing for White Text..."
+  fi
+  cd ${apk}/res/layout/ > /dev/null 2>&1 || exit 1
+  for i in status_bar.xml status_bar_latest_event_content.xml status_bar_expanded.xml
+  do
+    bbe -e "s/\x08\x00\x00\x1c\x00\x00\x00\xff/\x08\x00\x00\x1c\xff\xff\xff\xff/" ${i} -o new.${i} > /dev/null 2>&1 || exit 1
+    rm ${i} > /dev/null 2>&1 || exit 1
+    mv new.${i} ${i} > /dev/null 2>&1 || exit 1
+  done
 fi
-cd ${apk}/res/layout/ > /dev/null 2>&1 || exit 1
-for i in status_bar.xml status_bar_latest_event_content.xml status_bar_expanded.xml
-do
-  bbe -e "s/\x08\x00\x00\x1c\x00\x00\x00\xff/\x08\x00\x00\x1c\xff\xff\xff\xff/" ${i} new.${i} > /dev/null 2>&1 || exit 1
-  rm ${i} > /dev/null 2>&1 || exit 1
-  mv new.${i} ${i} > /dev/null 2>&1 || exit 1
-done

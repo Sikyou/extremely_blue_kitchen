@@ -1,0 +1,25 @@
+The scripts use a hexediting program called bbe.
+If your distro doesn't have it, you can find it at
+http://sourceforge.net/projects/bbe-/
+
+The android sdk tools folder must be in your $PATH
+You must have the smali/backsmali scripts and jar files
+in your $PATH
+
+This kitchen uses the following programs and
+expects them to be in your $PATH
+
+zip/unzip (as provided by infozip or similar)
+patch
+bbe
+java
+zipalign
+smali/baksmali
+
+********************************************************************************
+At this time, the kitchen only themes the core rom.  I will include my scripts
+to theme outside apps later.  These scripts will buid a seperate zip file for
+outside apps.  After some thinking, I don't want to include anything besides
+the stock apps in a rom.  If you want to theme more apps then the core, this
+kitchen will make it very easy to make a seperate zip that your users can
+download.

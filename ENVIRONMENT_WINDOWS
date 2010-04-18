@@ -91,3 +91,5 @@ Step-by-Step
      C:\android_kitchen or something like that is fine.
 
 07.) You now have a properly setup environment.
+     You might need to log off and then log on for changes to your %PATH% to
+         take effect.

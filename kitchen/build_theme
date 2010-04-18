@@ -211,7 +211,6 @@ outapppath=kitchenpath+slashadd+"rom_newstruct"+slashadd+"system"+slashadd+"app"
 """**************************************************************************"""
 """Theme and edit framework-res.apk"""
 """**************************************************************************"""
-"""
 kitfuns.verboseoutput("Theming and Editing framework-res.apk")
 os.chdir(fwapkp)
 kitfuns.pverboseoutput("Extracting framework-res.apk")
@@ -304,11 +303,10 @@ os.chdir(fwapkp)
 shutil.rmtree("framework-res")
 kitfuns.verboseoutput("Done Theming and Editing framework-res.apk")
 os.chdir(kitchenpath)
-"""
+
 """**************************************************************************"""
 """Editing services.jar"""
 """**************************************************************************"""
-"""
 if config.get("whitetext", "theme") == "y":
   kitfuns.verboseoutput("Patching services.jar")
   os.chdir("brokeout"+slashadd+"framework"+slashadd+"services")
@@ -357,7 +355,6 @@ if config.get("whitetext", "theme") == "y":
   os.chdir("..")
   shutil.rmtree("services")
   kitfuns.verboseoutput("Patched services.jar")
-"""
 """**************************************************************************"""
 """theme the apps we want themed"""
 """**************************************************************************"""

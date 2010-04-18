@@ -17,7 +17,7 @@
 """
 
 """imports"""
-import sys, os, shutil, subprocess, shlex, ConfigParser, zipfile
+import sys, os, shutil, subprocess, shlex, ConfigParser
 from distutils import dir_util
 
 """Lets see what we are running on so we can write correct paths.  Don't want
@@ -36,6 +36,11 @@ if os.path.exists(os.getcwd()+slashadd+"brokeout") == False:
 """Set our base directory variable for usage through the rest of the
    program"""
 kitchenpath=os.getcwd()
+import __builtin__
+__builtin__.kitchenpath=kitchenpath
+__builtin__.slashadd=slashadd
+sys.path.append(kitchenpath+slashadd+"include")
+import kitfuns
 
 """Read in our config file"""
 config= ConfigParser.ConfigParser()
@@ -44,64 +49,6 @@ config.read(kitchenpath+slashadd+"conf"+slashadd+"kitchen.ini")
 if config.get("ireadthis", "isuredid") != "y":
   print"\nPlease read the HOWTO file and try again.\n"
   sys.exit()
-
-"""**************************************************************************"""
-"""functions for verbose output for windows and others
-   these functions add color output to the program"""
-"""**************************************************************************"""
-if os.name == "nt":
-  import ctypes
-  STD_OUTPUT_HANDLE = -11
-  FOREGROUND_RED    = 0x0004
-  FOREGROUND_BLUE   = 0x0001
-  def get_csbi_attributes(handle):
-    # Based on IPython's winconsole.py, written by Alexander Belchenko
-    import struct
-    csbi = ctypes.create_string_buffer(22)
-    res = ctypes.windll.kernel32.GetConsoleScreenBufferInfo(handle, csbi)
-    assert res
-    (bufx, bufy, curx, cury, wattr, left, top,
-    right, bottom, maxx, maxy) = struct.unpack("hhhhHhhhhhh", csbi.raw)
-    return wattr
-  handle = ctypes.windll.kernel32.GetStdHandle(STD_OUTPUT_HANDLE)
-  reset = get_csbi_attributes(handle)
-  def formoutput( so ):
-    ctypes.windll.kernel32.SetConsoleTextAttribute(handle, FOREGROUND_BLUE)
-    print "  "+so
-    ctypes.windll.kernel32.SetConsoleTextAttribute(handle, reset)
-    return
-  def verboseoutput( so ):
-    if config.get("general", "verbose") == "y":
-      ctypes.windll.kernel32.SetConsoleTextAttribute(handle, FOREGROUND_BLUE)
-      print "  "+so
-      ctypes.windll.kernel32.SetConsoleTextAttribute(handle, reset)
-    return
-  def pverboseoutput( so ):
-    if config.get("general", "patchverbose") == "y":
-      ctypes.windll.kernel32.SetConsoleTextAttribute(handle, FOREGROUND_BLUE)
-      print "   ** "+so
-      ctypes.windll.kernel32.SetConsoleTextAttribute(handle, reset)
-    return
-  def erroroutput( so ):
-    ctypes.windll.kernel32.SetConsoleTextAttribute(handle, FOREGROUND_RED)
-    print "  ERROR: "+so
-    ctypes.windll.kernel32.SetConsoleTextAttribute(handle, reset)
-    return
-else:
-  def formoutput( so ):
-    print '\033[94m  '+so+'\033[0m'
-    return
-  def verboseoutput( so ):
-    if config.get("general", "verbose") == "y":
-      print '\033[94m  '+so+'\033[0m'
-    return
-  def pverboseoutput( so ):
-    if config.get("general", "patchverbose") == "y":
-      print '\033[94m   ** '+so+'\033[0m'
-    return
-  def erroroutput( so ):
-    print '\033[91m  ERROR: '+so+'\033[0m'
-    return
 
 """**************************************************************************"""
 """function for copying edited images into the default tree of an apk"""
@@ -114,22 +61,8 @@ def eimgcopy( srcdir, destdir):
       srcdirn=srcdir+slashadd+dirtochk
       destdirn=destdir+slashadd+dirtochk
       if dir_util.copy_tree(srcdirn, destdirn, preserve_mode=1) == False:
-	erroroutput("Could not copy image files.  Unknown Error")
+	kitfuns.erroroutput("Could not copy image files.  Unknown Error")
 	sys.exit()
-  return
-
-"""**************************************************************************"""
-"""function similar to sed for a file"""
-"""**************************************************************************"""
-def fstrrep( filen, smatch, sreplace ):
-  nfilen = filen+".new"
-  o = open(nfilen, "a")
-  for line in open(filen):
-    line = line.replace(smatch, sreplace)
-    o.write(line)
-  o.close()
-  os.remove(filen)
-  os.rename(nfilen, filen)
   return
 
 """**************************************************************************"""
@@ -142,8 +75,8 @@ print ""
 """Build the signing command"""
 """**************************************************************************"""
 if os.path.exists("autosign") == False:
-  erroroutput("autosign missing")
-  erroroutput("      Please make sure the kitchen is complete")
+  kitfuns.erroroutput("autosign missing")
+  kitfuns.erroroutput("      Please make sure the kitchen is complete")
   sys.exit()
 javasign="java -jar "+kitchenpath+slashadd+"autosign"+slashadd+"signapk.jar"
 javasign=javasign+" "+kitchenpath+slashadd+"autosign"+slashadd+"testkey.x509.pem"
@@ -152,9 +85,9 @@ javasign=javasign+" "+kitchenpath+slashadd+"autosign"+slashadd+"testkey.pk8"
 """**************************************************************************"""
 """We'll start by extracting the default rom"""
 """**************************************************************************"""
-verboseoutput("Extracting Original CyanogenMod Rom")
+kitfuns.verboseoutput("Extracting Original CyanogenMod Rom")
 if os.path.exists(kitchenpath+slashadd+"rom_orig") == False:
-  erroroutput("Please read the HOWTO file and try again.")
+  kitfuns.erroroutput("Please read the HOWTO file and try again.")
   sys.exit()
 os.chdir(kitchenpath+slashadd+"rom_orig")
 cmversion=config.get("general", "cmversion")
@@ -162,31 +95,31 @@ cmphone=config.get("general", "phone")
 cmromdir="update-cm-"+cmversion+"-"+cmphone+"-signed"
 cmromfile=cmromdir+".zip"
 if os.path.exists(kitchenpath+slashadd+"rom_orig"+slashadd+cmromfile) == False:
-  erroroutput("Please read the HOWTO file and try again.")
+  kitfuns.erroroutput("Please read the HOWTO file and try again.")
   sys.exit()
 if os.path.exists(cmromdir) == True:
-  verboseoutput("Original Rom extraction directory found.  Attempting to delete.")
+  kitfuns.verboseoutput("Original Rom extraction directory found.  Attempting to delete.")
   if shutil.rmtree(cmromdir) == False:
-    erroroutput("Original Rom extraction directory already exists")
-    erroroutput("Please delete rom_oring"+slashadd+cmromdir)
+    kitfuns.erroroutput("Original Rom extraction directory already exists")
+    kitfuns.erroroutput("Please delete rom_oring"+slashadd+cmromdir)
     sys.exit()
 os.mkdir(cmromdir, 0755)
 zargs=shlex.split("unzip -qq "+cmromfile+" -d "+cmromdir)
 if subprocess.Popen(zargs).wait() != 0:
-  erroroutput("Could not extract default cyanogenmod rom.  Unknown Error")
+  kitfuns.erroroutput("Could not extract default cyanogenmod rom.  Unknown Error")
   sys.exit()
 os.chdir(cmromdir)
 cmromexpath=os.getcwd()
 os.chdir(kitchenpath)
-verboseoutput("Original CyanogenMod Rom Extracted")
+kitfuns.verboseoutput("Original CyanogenMod Rom Extracted")
 
 """**************************************************************************"""
 """Place apk and jar files into the correct directories"""
 """**************************************************************************"""
-verboseoutput("Moving /system/app APKs Into Editing Directories")
+kitfuns.verboseoutput("Moving /system/app APKs Into Editing Directories")
 if os.path.exists(kitchenpath+slashadd+"brokeout"+slashadd+"app") == False:
-  erroroutput("app directory inside of brokeout is missing")
-  erroroutput("      Please make sure the kitchen is complete")
+  kitfuns.erroroutput("app directory inside of brokeout is missing")
+  kitfuns.erroroutput("      Please make sure the kitchen is complete")
   sys.exit()
 apppath=kitchenpath+slashadd+"brokeout"+slashadd+"app"
 apppathorig=cmromexpath+slashadd+"system"+slashadd+"app"
@@ -194,20 +127,20 @@ for apkf in config.options("includeapp"):
   if config.get("includeapp", apkf) == "y":
     apkpath=apppath+slashadd+apkf
     if os.path.exists(apkpath) == False:
-      erroroutput("app directory for "+apkf+" is missing")
-      erroroutput("      Please make sure the kitchen is complete")
+      kitfuns.erroroutput("app directory for "+apkf+" is missing")
+      kitfuns.erroroutput("      Please make sure the kitchen is complete")
       sys.exit()
     else:
       apkforig=apppathorig+slashadd+apkf+".apk"
       apkfnew=apkpath+slashadd+apkf+".apk"
       if shutil.move(apkforig, apkfnew) == False:
-	erroroutput("Could not move "+apkf)
+	kitfuns.erroroutput("Could not move "+apkf)
 	sys.exit()
 
-verboseoutput("Moving /system/framework JARs Into Editing Directories")
+kitfuns.verboseoutput("Moving /system/framework JARs Into Editing Directories")
 if os.path.exists(kitchenpath+slashadd+"brokeout"+slashadd+"framework") == False:
-  erroroutput("framework directory inside of brokeout is missing")
-  erroroutput("      Please make sure the kitchen is complete")
+  kitfuns.erroroutput("framework directory inside of brokeout is missing")
+  kitfuns.erroroutput("      Please make sure the kitchen is complete")
   sys.exit()
 jarpath=kitchenpath+slashadd+"brokeout"+slashadd+"framework"
 jarpathorig=cmromexpath+slashadd+"system"+slashadd+"framework"
@@ -215,55 +148,55 @@ for jarf in config.options("includefw"):
   if config.get("includefw", jarf) == "y":
     jarfpath=jarpath+slashadd+jarf
     if os.path.exists(jarfpath) == False:
-      erroroutput("jar direcotry for "+jarf+" is missing")
-      erroroutput("      Please make sure the kitchen is complete")
+      kitfuns.erroroutput("jar direcotry for "+jarf+" is missing")
+      kitfuns.erroroutput("      Please make sure the kitchen is complete")
       sys.exit()
     else:
       jarforig=jarpathorig+slashadd+jarf+".jar"
       jarfnew=jarfpath+slashadd+jarf+".jar"
       if shutil.move(jarforig, jarfnew) == False:
-	erroroutput("Error: Could not move "+jarf)
+	kitfuns.erroroutput("Error: Could not move "+jarf)
 	sys.exit()
 
-verboseoutput("Moving framework-res.apk Into Editing Directory")
+kitfuns.verboseoutput("Moving framework-res.apk Into Editing Directory")
 fwapko=cmromexpath+slashadd+"system"+slashadd+"framework"+slashadd+"framework-res.apk"
 fwapkp=kitchenpath+slashadd+"brokeout"+slashadd+"framework"+slashadd+"framework-res"
 fwapkn=fwapkp+slashadd+"framework-res.apk"
 if os.path.exists(fwapkp) == False:
-  erroroutput("framework-res directory in brokeout does not exist")
-  erroroutput("      Please make sure the kitchen is complete")
+  kitfuns.erroroutput("framework-res directory in brokeout does not exist")
+  kitfuns.erroroutput("      Please make sure the kitchen is complete")
   sys.exit()
 else:
   if shutil.move(fwapko, fwapkn) == False:
-    erroroutput("Could not move framework-res.apk")
+    kitfuns.erroroutput("Could not move framework-res.apk")
     sys.exit()
 
 """**************************************************************************"""
 """Cleanup the extraction directory of the original rom"""
 """**************************************************************************"""
-verboseoutput("Cleaning Up Extraction Directory")
+kitfuns.verboseoutput("Cleaning Up Extraction Directory")
 os.chdir(kitchenpath+slashadd+"rom_orig")
 if shutil.rmtree(cmromdir) == False:
-  erroroutput("Could Not Delete Original Rom Extraction Directory")
+  kitfuns.erroroutput("Could Not Delete Original Rom Extraction Directory")
   sys.exit()
 os.chdir(kitchenpath)
 
 """**************************************************************************"""
 """Build output directory"""
 """**************************************************************************"""
-verboseoutput("Preparing Output Tree")
+kitfuns.verboseoutput("Preparing Output Tree")
 if os.path.exists("rom_newstruct") == False:
-  erroroutput("rom_newstruct directory does not exist")
-  erroroutput("      Please make sure the kitchen is complete")
+  kitfuns.erroroutput("rom_newstruct directory does not exist")
+  kitfuns.erroroutput("      Please make sure the kitchen is complete")
   sys.exit()
 os.chdir("rom_newstruct")
 if os.path.exists("META-INF"+slashadd+"com"+slashadd+"google"+slashadd+"android"+slashadd+"update-script") == False:
-  erroroutput("update-script does not exist")
-  erroroutput("      Please make sure the kitchen is complete")
+  kitfuns.erroroutput("update-script does not exist")
+  kitfuns.erroroutput("      Please make sure the kitchen is complete")
   sys.exit()
 if os.path.exists("remtool.sh") == False:
-  erroroutput("remtool.sh does not exist")
-  erroroutput("      Please make sure the kitchen is complete")
+  kitfuns.erroroutput("remtool.sh does not exist")
+  kitfuns.erroroutput("      Please make sure the kitchen is complete")
   sys.exit()
 if os.path.exists("system") == True:
   shutil.rmtree("system")
@@ -278,60 +211,61 @@ outapppath=kitchenpath+slashadd+"rom_newstruct"+slashadd+"system"+slashadd+"app"
 """**************************************************************************"""
 """Theme and edit framework-res.apk"""
 """**************************************************************************"""
-verboseoutput("Theming and Editing framework-res.apk")
+"""
+kitfuns.verboseoutput("Theming and Editing framework-res.apk")
 os.chdir(fwapkp)
-pverboseoutput("Extracting framework-res.apk")
+kitfuns.pverboseoutput("Extracting framework-res.apk")
 if config.get("whitetext", "theme") == "y":
   needapktool="y"
 if config.get("progressbar", "theme") == "y":
   needapktool="y"
 zargs=shlex.split("unzip -qq framework-res.apk -d framework-res")
 if subprocess.Popen(zargs).wait() != 0:
-  erroroutput("Could Not Extract framework-res.apk")
+  kitfuns.erroroutput("Could Not Extract framework-res.apk")
   sys.exit()
-pverboseoutput("Copying Edited Images Into framework-res Tree")
+kitfuns.pverboseoutput("Copying Edited Images Into framework-res Tree")
 newimages=fwapkp+slashadd+"image"
 origimages=fwapkp+slashadd+"framework-res"+slashadd+"res"
 eimgcopy(newimages, origimages)
 if needapktool == "y":
-  pverboseoutput("Running apktool on framework-res.apk")
+  kitfuns.pverboseoutput("Running apktool on framework-res.apk")
   zargs=shlex.split("apktool d -s framework-res.apk toold")
   if subprocess.Popen(zargs, stdout=subprocess.PIPE, stderr=subprocess.PIPE).wait() != 0:
-    erroroutput("Could Not apktool framework-res.apk")
+    kitfuns.erroroutput("Could Not apktool framework-res.apk")
     sys.exit()
   if config.get("whitetext", "theme") == "y":
-    pverboseoutput("Patching Framework For White Text")
+    kitfuns.pverboseoutput("Patching Framework For White Text")
     os.chdir("toold"+slashadd+"res"+slashadd+"layout")
-    fstrrep("status_bar_expanded.xml", "ff000000", "ffffffff")
-    fstrrep("status_bar_latest_event_content.xml", "ff000000", "ffffffff")
-    fstrrep("status_bar.xml", "ff000000", "ffffffff")
+    kitfuns.fstrrep("status_bar_expanded.xml", "ff000000", "ffffffff")
+    kitfuns.fstrrep("status_bar_latest_event_content.xml", "ff000000", "ffffffff")
+    kitfuns.fstrrep("status_bar.xml", "ff000000", "ffffffff")
     os.chdir(fwapkp)
   if config.get("progressbar", "theme") == "y":
-    pverboseoutput("Patching Progressbars in Framework")
+    kitfuns.pverboseoutput("Patching Progressbars in Framework")
     os.chdir("toold"+slashadd+"res"+slashadd+"drawable")
-    fstrrep("progress_horizontal.xml", "9d9e9d", config.get("progressbar", "bgstartcol"))
-    fstrrep("progress_horizontal.xml", "5a5d5a", config.get("progressbar", "bgcentercol"))
-    fstrrep("progress_horizontal.xml", "747674", config.get("progressbar", "bgendcol"))
-    fstrrep("progress_horizontal.xml", "ffd300", config.get("progressbar", "secstartcol"))
-    fstrrep("progress_horizontal.xml", "ffb600", config.get("progressbar", "seccentercol"))
-    fstrrep("progress_horizontal.xml", "ffcb00", config.get("progressbar", "secendcol"))
-    fstrrep("progress_horizontal.xml", "ffd300", config.get("progressbar", "mainstartcol"))
-    fstrrep("progress_horizontal.xml", "ffb600", config.get("progressbar", "maincentercol"))
-    fstrrep("progress_horizontal.xml", "ffcb00", config.get("progressbar", "mainendcol"))
+    kitfuns.fstrrep("progress_horizontal.xml", "9d9e9d", config.get("progressbar", "bgstartcol"))
+    kitfuns.fstrrep("progress_horizontal.xml", "5a5d5a", config.get("progressbar", "bgcentercol"))
+    kitfuns.fstrrep("progress_horizontal.xml", "747674", config.get("progressbar", "bgendcol"))
+    kitfuns.fstrrep("progress_horizontal.xml", "ffd300", config.get("progressbar", "secstartcol"))
+    kitfuns.fstrrep("progress_horizontal.xml", "ffb600", config.get("progressbar", "seccentercol"))
+    kitfuns.fstrrep("progress_horizontal.xml", "ffcb00", config.get("progressbar", "secendcol"))
+    kitfuns.fstrrep("progress_horizontal.xml", "ffd300", config.get("progressbar", "mainstartcol"))
+    kitfuns.fstrrep("progress_horizontal.xml", "ffb600", config.get("progressbar", "maincentercol"))
+    kitfuns.fstrrep("progress_horizontal.xml", "ffcb00", config.get("progressbar", "mainendcol"))
   os.chdir(fwapkp)
-  pverboseoutput("Rebuilding With apktool")
+  kitfuns.pverboseoutput("Rebuilding With apktool")
   zargs=shlex.split("apktool b toold")
   if subprocess.Popen(zargs, stdout=subprocess.PIPE, stderr=subprocess.PIPE).wait() != 0:
-    erroroutput("Could Not apktool Rebuild framework-res.apk")
+    kitfuns.erroroutput("Could Not apktool Rebuild framework-res.apk")
     sys.exit()
   os.chdir("toold"+slashadd+"dist")
   shutil.move("out.apk", fwapkp+slashadd+"out.apk")
   os.chdir(fwapkp)
-  pverboseoutput("Integrating Edited XML Files")
+  kitfuns.pverboseoutput("Integrating Edited XML Files")
   shutil.rmtree("toold")
   zargs=shlex.split("unzip -qq out.apk -d toold")
   if subprocess.Popen(zargs, stdout=subprocess.PIPE, stderr=subprocess.PIPE).wait() != 0:
-    erroroutput("Could Not Unzip out.apk")
+    kitfuns.erroroutput("Could Not Unzip out.apk")
     sys.exit()
   if config.get("whitetext", "theme") == "y":
     os.chdir("toold"+slashadd+"res"+slashadd+"layout")
@@ -345,106 +279,105 @@ if needapktool == "y":
     os.chdir(fwapkp)
   os.remove("out.apk")
   shutil.rmtree("toold")
-pverboseoutput("Recompressing framework-res.apk")
+kitfuns.pverboseoutput("Recompressing framework-res.apk")
 os.remove("framework-res.apk")
 os.chdir("framework-res")
 shutil.rmtree("META-INF")
 zargs=shlex.split("zip -q framework-res.apk -r .")
 if subprocess.Popen(zargs).wait() != 0:
-  erroroutput("Could Not Recompress framework-res.apk")
+  kitfuns.erroroutput("Could Not Recompress framework-res.apk")
   sys.exit()
-pverboseoutput("Signing framework-res.apk")
+kitfuns.pverboseoutput("Signing framework-res.apk")
 zargs=shlex.split(javasign+" framework-res.apk new.framework-res.apk")
 if subprocess.Popen(zargs).wait() != 0:
-  erroroutput("Could Not Sign framework-res.apk")
+  kitfuns.erroroutput("Could Not Sign framework-res.apk")
   sys.exit()
-pverboseoutput("Zipaligning framework-res.apk")
+kitfuns.pverboseoutput("Zipaligning framework-res.apk")
 os.remove("framework-res.apk")
 zargs=shlex.split("zipalign 4 new.framework-res.apk framework-res.apk")
 if subprocess.Popen(zargs).wait() != 0:
-  erroroutput("Could Not Zipalign framework-res.apk")
+  kitfuns.erroroutput("Could Not Zipalign framework-res.apk")
   sys.exit()
-pverboseoutput("Cleaning Up framework-res Edit Tree")
+kitfuns.pverboseoutput("Cleaning Up framework-res Edit Tree")
 shutil.move("framework-res.apk", outfwpath+slashadd+"framework-res.apk")
 os.chdir(fwapkp)
 shutil.rmtree("framework-res")
-verboseoutput("Done Theming and Editing framework-res.apk")
+kitfuns.verboseoutput("Done Theming and Editing framework-res.apk")
 os.chdir(kitchenpath)
-
+"""
 """**************************************************************************"""
 """Editing services.jar"""
 """**************************************************************************"""
+"""
 if config.get("whitetext", "theme") == "y":
-  verboseoutput("Patching services.jar")
+  kitfuns.verboseoutput("Patching services.jar")
   os.chdir("brokeout"+slashadd+"framework"+slashadd+"services")
-  pverboseoutput("Unzipping services.jar")
+  kitfuns.pverboseoutput("Unzipping services.jar")
   zargs=shlex.split("unzip -qq services.jar -d services")
   if subprocess.Popen(zargs, stdout=subprocess.PIPE, stderr=subprocess.PIPE).wait() != 0:
-    erroroutput("Could Not Unzip services.jar")
+    kitfuns.erroroutput("Could Not Unzip services.jar")
     sys.exit()
   os.remove("services.jar")
-  pverboseoutput("baksmali services.jar")
+  kitfuns.pverboseoutput("baksmali services.jar")
   os.chdir("services")
   zargs=shlex.split("baksmali -o classout classes.dex")
   if subprocess.Popen(zargs, stdout=subprocess.PIPE, stderr=subprocess.PIPE).wait() != 0:
-    erroroutput("Could Not baksmali services.jar")
+    kitfuns.erroroutput("Could Not baksmali services.jar")
     sys.exit()
-  pverboseoutput("Patch StatusBarIcon")
+  kitfuns.pverboseoutput("Patch StatusBarIcon")
   zargs=shlex.split("patch -p0 -i ../StatusBarIcon_white_text.diff")
   if subprocess.Popen(zargs, stdout=subprocess.PIPE, stderr=subprocess.PIPE).wait() != 0:
-    erroroutput("Could Not Apply Patch StatusBarIcon_white_text.diff")
+    kitfuns.erroroutput("Could Not Apply Patch StatusBarIcon_white_text.diff")
     sys.exit()
-  pverboseoutput("Patch StatusBarService")
+  kitfuns.pverboseoutput("Patch StatusBarService")
   zargs=shlex.split("patch -p0 -i ../StatusBarService_white_text.diff")
   if subprocess.Popen(zargs, stdout=subprocess.PIPE, stderr=subprocess.PIPE).wait() != 0:
-    erroroutput("Could Not Apply Patch StatusBarService_white_text.diff")
+    kitfuns.erroroutput("Could Not Apply Patch StatusBarService_white_text.diff")
     sys.exit()
-  pverboseoutput("smali services.jar")
+  kitfuns.pverboseoutput("smali services.jar")
   os.remove("classes.dex")
   zargs=shlex.split("smali classout -o classes.dex")
   if subprocess.Popen(zargs, stdout=subprocess.PIPE, stderr=subprocess.PIPE).wait() != 0:
-    erroroutput("Could Not smali services.jar")
+    kitfuns.erroroutput("Could Not smali services.jar")
     sys.exit()
   shutil.rmtree("classout")
-  pverboseoutput("Recompressing services.jar")
+  kitfuns.pverboseoutput("Recompressing services.jar")
   zargs=shlex.split("zip -9 services.jar -r .")
   if subprocess.Popen(zargs, stdout=subprocess.PIPE, stderr=subprocess.PIPE).wait() != 0:
-    erroroutput("Could Not Recompress services.jar")
+    kitfuns.erroroutput("Could Not Recompress services.jar")
     sys.exit()
-  pverboseoutput("Zipaligning services.jar")
+  kitfuns.pverboseoutput("Zipaligning services.jar")
   zargs=shlex.split("zipalign 4 services.jar new.services.jar")
   if subprocess.Popen(zargs, stdout=subprocess.PIPE, stderr=subprocess.PIPE).wait() != 0:
-    erroroutput("Could Not Zipalign services.jar")
+    kitfuns.erroroutput("Could Not Zipalign services.jar")
     sys.exit()
   os.remove("services.jar")
   shutil.move("new.services.jar", outfwpath+slashadd+"services.jar")
-  pverboseoutput("Cleaning Up")
+  kitfuns.pverboseoutput("Cleaning Up")
   os.chdir("..")
   shutil.rmtree("services")
-  verboseoutput("Patched services.jar")
-
+  kitfuns.verboseoutput("Patched services.jar")
+"""
 """**************************************************************************"""
 """theme the apps we want themed"""
 """**************************************************************************"""
-verboseoutput("Theming APKs")
-sys.path.append(kitchenpath+slashadd+"include")
+kitfuns.verboseoutput("Theming APKs")
 for apkf in sorted(config.options("includeapp")):
   if config.get("includeapp", apkf) == "y":
-    pverboseoutput("Themeing "+apkf)
+    kitfuns.pverboseoutput("Themeing "+apkf)
     apkpath=apppath+slashadd+apkf
     os.chdir(apkpath)
     if os.path.exists(apkf) == True:
       shutil.rmtree(apkf)
     zargs=shlex.split("unzip -qq "+apkf+".apk -d "+apkf)
     if subprocess.Popen(zargs).wait() != 0:
-      erroroutput("Could Not Extract "+apkf+".apk")
+      kitfuns.erroroutput("Could Not Extract "+apkf+".apk")
       sys.exit()
-    os.remove(apkf+".apk")
-    pverboseoutput("Copying Edited Images Into "+apkf+" Tree")
+    kitfuns.pverboseoutput("Copying Edited Images Into "+apkf+" Tree")
     newimages=apkpath+slashadd+"image"
     origimages=apkpath+slashadd+apkf+slashadd+"res"
     eimgcopy(newimages, origimages)
-    pverboseoutput("Cleaning Edit Tree: "+apkf)
+    kitfuns.pverboseoutput("Cleaning Edit Tree: "+apkf)
     os.chdir(apkf)
     shutil.rmtree("META-INF")
     os.chdir(apkpath)
@@ -452,54 +385,56 @@ for apkf in sorted(config.options("includeapp")):
       if config.get(apkf, "extra") == "y":
         importname="kitchen_"+apkf
         tmpmod=__import__(importname)
-        pverboseoutput("Running Custom Commands for "+apkf)
+        kitfuns.pverboseoutput("Running Custom Commands for "+apkf)
         tmpmod.custom_commands_run(apkf, apkpath, kitchenpath)
+    os.chdir(apkpath)
+    os.remove(apkf+".apk")
     os.chdir(apkpath+slashadd+apkf)
-    pverboseoutput("Recompressing "+apkf+".apk")
+    kitfuns.pverboseoutput("Recompressing "+apkf+".apk")
     zargs=shlex.split("zip -q9 "+apkf+".apk -r .")
     if subprocess.Popen(zargs).wait() != 0:
-      erroroutput("Could Not Recompress "+apkf+".apk")
+      kitfuns.erroroutput("Could Not Recompress "+apkf+".apk")
       sys.exit()
-    pverboseoutput("Signing "+apkf+".apk")
+    kitfuns.pverboseoutput("Signing "+apkf+".apk")
     zargs=shlex.split(javasign+" "+apkf+".apk new."+apkf+".apk")
     if subprocess.Popen(zargs, stdout=subprocess.PIPE, stderr=subprocess.PIPE).wait() != 0:
-      erroroutput("Could Not Sign "+apkf+".apk")
+      kitfuns.erroroutput("Could Not Sign "+apkf+".apk")
       sys.exit()
-    pverboseoutput("Zipaligning "+apkf+".apk")
+    kitfuns.pverboseoutput("Zipaligning "+apkf+".apk")
     os.remove(apkf+".apk")
     zargs=shlex.split("zipalign 4 new."+apkf+".apk "+apkf+".apk")
     if subprocess.Popen(zargs, stdout=subprocess.PIPE, stderr=subprocess.PIPE).wait() != 0:
-      erroroutput("Could Not Zipalign "+apkf+".apk")
+      kitfuns.erroroutput("Could Not Zipalign "+apkf+".apk")
       sys.exit()
     os.remove("new."+apkf+".apk")
-    pverboseoutput("Cleaning Up "+apkf+" Edit Tree")
+    kitfuns.pverboseoutput("Cleaning Up "+apkf+" Edit Tree")
     shutil.move(apkf+".apk", outapppath+slashadd+apkf+".apk")
     os.chdir(apkpath)
     shutil.rmtree(apkf)
-    pverboseoutput("Themeing "+apkf+" Done")
-    pverboseoutput("************************************************************ **")
+    kitfuns.pverboseoutput("Themeing "+apkf+" Done")
+    kitfuns.pverboseoutput("************************************************************ **")
 os.chdir(kitchenpath)
-verboseoutput("Theming APKs Done")
-verboseoutput("Building Theme Zip")
+kitfuns.verboseoutput("Theming APKs Done")
+kitfuns.verboseoutput("Building Theme Zip")
 if os.path.exists("final") == False:
   os.mkdir("final", 0755)
 os.chdir("rom_newstruct")
 zargs=shlex.split("zip -q0 "+kitchenpath+slashadd+"final"+slashadd+"update.zip -r .")
 if subprocess.Popen(zargs).wait() != 0:
-  erroroutput("Could Not Build Theme Zip")
+  kitfuns.erroroutput("Could Not Build Theme Zip")
   sys.exit()
 os.chdir(kitchenpath+slashadd+"final")
-verboseoutput("Signing Theme Zip")
+kitfuns.verboseoutput("Signing Theme Zip")
 zargs=shlex.split(javasign+" update.zip new.update.zip")
 if subprocess.Popen(zargs, stdout=subprocess.PIPE, stderr=subprocess.PIPE).wait() != 0:
-  erroroutput("Could Not Sign Theme Zip")
+  kitfuns.erroroutput("Could Not Sign Theme Zip")
   sys.exit()
 os.remove("update.zip")
 os.rename("new.update.zip", "update.zip")
-verboseoutput("Cleaning Rom Structure Directory")
+kitfuns.verboseoutput("Cleaning Rom Structure Directory")
 os.chdir(kitchenpath+slashadd+"rom_newstruct")
 shutil.rmtree("system")
-formoutput(config.get("general", "themename")+" "+config.get("general", "themeversion")+": Build Complete")
-formoutput("The signed update.zip is in the final directory")
-formoutput("Be sure to rename this file according to your needs")
+kitfuns.formoutput(config.get("general", "themename")+" "+config.get("general", "themeversion")+": Build Complete")
+kitfuns.formoutput("The signed update.zip is in the final directory")
+kitfuns.formoutput("Be sure to rename this file according to your needs")
 print ""

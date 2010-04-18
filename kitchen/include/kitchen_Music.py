@@ -24,9 +24,9 @@ import kitfuns
 playerbackground="293e66"
 
 """add your custom commands here"""
-def custom_commands_run( apkname, apkpath, kitchenpath ):
+def custom_commands_run( apkname, apkpath, kitchenpath, apktool, smali, baksmali ):
   os.chdir(apkpath)
-  zargs=shlex.split("apktool d "+apkname+".apk toold")
+  zargs=shlex.split(apktool+" d "+apkname+".apk toold")
   if subprocess.Popen(zargs, stdout=subprocess.PIPE, stderr=subprocess.PIPE).wait() != 0:
     kitfuns.erroroutput("Could Not apktool"+apkname+".apk")
     sys.exit()
@@ -35,7 +35,7 @@ def custom_commands_run( apkname, apkpath, kitchenpath ):
   os.chdir(apkpath+slashadd+"toold"+slashadd+"res"+slashadd+"layout-finger")
   kitfuns.fstrrep("audio_player_common.xml", "5a5a5a", playerbackground)
   os.chdir(apkpath)
-  zargs=shlex.split("apktool b toold")
+  zargs=shlex.split(apktool+" b toold")
   if subprocess.Popen(zargs, stdout=subprocess.PIPE, stderr=subprocess.PIPE).wait() != 0:
     kitfuns.erroroutput("Could Not apktool Rebuild "+apkname+".apk")
     sys.exit()

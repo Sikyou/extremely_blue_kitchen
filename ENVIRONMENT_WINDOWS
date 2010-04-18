@@ -1,0 +1,93 @@
+A proper environment is needed for this kitchen to function as intened.
+
+You will need the following items installed.
+
+Android SDK
+http://developer.android.com/sdk/index.html
+
+Sun Java JDK
+http://java.sun.com/javase/downloads/widget/jdk6.jsp
+
+Python 2.6.* (This has been confirmed working.  I am working on Python 3.*)
+http://www.python.org/download/
+
+Smali/Backsmali
+http://code.google.com/p/smali/downloads/list
+
+Apktool
+http://code.google.com/p/android-apktool/downloads/list
+
+Any other needed binaries are included in the bin/ folder within the kitchen/
+folder.
+
+
+Step-by-Step
+--------------------------------------------------------------------------------
+01.) Install the android sdk.  You should downloaded a zip, so extract that out.
+     After extracting, find the folder that contains the "SDK Setup.exe".
+     This folder should be named android-sdk-windows.
+     Rename this folder to androidsdk.
+     Move this folder to the C:\ drive.
+     Now, open c:\androidsdk, and double click "SDK Setup.exe"
+     Make sure "SDK Platform Androi 2.1, API7" is hightlighted.
+     Choose "Accept"
+     Scroll down to "Usb Driver package"
+     Click to highlight it, then choose Accept.
+     Click on Install.
+     If you have problems downloading, choose settings, and check "Force https"
+     Go ahead and close this program.
+
+02.) Install the Java SDK.
+     Double click the sdk.exe you downloaded.
+     Click Accept
+     Click Change
+     Set the install folder to C:\javasdk.
+     Click on "Source code" and choose "Do not install this feature now"
+     Click on "Public JRE" and choose "Do not install this feature now"
+     Click next
+     Click finish
+
+03.) Install python
+     Double click the installer you downloaded.
+     Choose "install for all users" and click Next
+     Make sure the install path is C:\Python26\
+     Click Next
+     Click Next
+     Click Finish
+
+04.) Create a new directory on your C:\ drive named androidtools
+     rename the baksmali-*.jar you downloaded to baksmali.jar
+     rename the smali-*.jar you downloaded to smali.jar
+     Copy these files into C:\androidtools
+     Extract the apktool.jar from the apktool*bz2 file you downloaded
+          (You will need a zip program that can extract bz2 files.)
+          (7-zip or Winrar work for this.)
+     Copy apktool.jar into C:\androidtools
+     Make sure you downloaded the aptool-install-windows-*.zip also
+     Unzip this file
+     Copy apktool.bat and mgwz.dll to C:\androidtools
+     Right click on apktool.bat and choose edit
+     Change %windir%\apktool.jar to C:\androidtools\apktool.jar
+     Copy all files out of the bin/ directory in kitchen/ and paste them in
+        c:\androidtools\
+
+05.) Right click on "My Computer"
+     Choose "Properties"
+     XP - Click the "Advanced" tab, then click "Environmental Variables"
+     Vista / 7 - Click "Advanced System Settings", the click
+                 "Environmental Variables"
+     On the bottom box, Scroll down till you find Path
+     Highlight Path and click Edit
+     Go to the end of this line.
+     If one is not already there, add a semi-colon  ";"
+     Now add the following
+     C:\androidsdk\tools;C:\androidsdk\platforms\android-7\tools;C:\javasdk\bin;C:\Python26;C:\androidtools;
+     Click "OK"
+     Click "OK"
+     Click "OK"
+     Close any other windows you had opened.
+
+06.) Move your kitchen to a place that has no spaces in it.
+     C:\android_kitchen or something like that is fine.
+
+07.) You now have a properly setup environment.

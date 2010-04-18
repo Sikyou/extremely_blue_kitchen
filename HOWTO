@@ -1,28 +1,30 @@
-**READ THE README AND NOTES**
-
-The base kitchen resides in the kitchen/ folder.
+The base kitchen resides in the kitchen/ folder
+All commands are relative to the base folder kitchen/
 
 To use the kitchen, you will need to do the following.
 
 01.)  Put the original cyanogenmod rom in rom_orig
 
-02.)  Edit conf/include_app to include the exact names of apk's you wish to edit.
-      (That is, the apks that are in /system/app of the original rom.)
-      (Do not include extensions - ie .apk)
+02.)  Edit conf/kitchen.ini - I have left this at the defaults I use to build
+      Extremely Blue.  You can edit to your liking.  Be sure to change the apps
+      you wish to include and not include by setting the y or n option for that
+      particular app.
 
-03.)  Edit conf/include_framework to include the exact names of jar files you wish to edit.
-      (That is, the jars are in /system/framework of the original rom.)
-      (framework-res.apk is included by default.  As this is the basis of all themes.)
-      (Do not include extensions - ie .jar)
+03.)  There is custom editing using smali and line editing in this kitchen.
+      The two apps that I do the most editing on are Luancher2 and Music.  They
+      use a custom command script that can be found in include/.  Each script
+      is named kitchen_Appname.py.  You can use these as templates if you wish to
+      do any custom editing on any other apps.  If you want to do custom scripts,
+      you must set the [Appname] option in conf/kitchen.ini with option extra=y.
 
-04.)  Edit conf/whitetext, and put TRUE as the only word in it if you want white text
-      on the top bars and pulldown area.
+04.)  Be sure to read the entire conf/kitchen.ini.  If you don't, the kitchen
+      will not work.  After reading and editing conf/kitchen.ini, be sure to
+      change [ireadthis]isuredid=n to [ireadthis]isuredid=y
 
 05.)  Place your edited images into the kitchen.
       This is done in the brokeout/ directory.
       **
       Under apps, is all of the applications I have edited.
-      (I will add more directories now that the simple conf system is in place.)
       In each application directory is a folder named image.
       Inside this directory, you can place your edited images accordingly.
       (ie, drawable, drawable-hdpi, so on.)
@@ -31,19 +33,19 @@ To use the kitchen, you will need to do the following.
       Also included is a sourcenine directory.
       This directory contains my edited source .9.png files.
       **
-      The same as above applies to the brokeout/framework directory, although framework-res
-      is the only apk you will do that with here.
-      Any other directories here include a fixnow and patches for jar files.
-      Please do not change these scripts or patches unless you know what you are doing.
-      Also, feel free to reuse the services directory as a base to create edit scripts
-      for other jar files.
+      The same as above applies to the brokeout/framework directory, although
+      framework-res is the only apk you will do that with here.
 
-06.)  After placing your edited images and the original rom, move to the base of the kitchen
-      directory in a command prompt.  Run the following command
-      sh scripts/00_build_theme
+06.)  Make sure your environment is setup correctly.  You can find more details
+      on this in the ENVIRONMENT file.
 
-      (If you would like a verbose output during build, type the following command instead)
-      BEVERBOSE=Y sh scripts/00_build_theme
+07.)  Once you have a correct environment, and all files placed and edited, open
+      a command prompt and navigate to the base directory.  (kitchen/)
+      Once in the base directory, type the following command.
 
-07.)  When this is done running, you will have a brand new update.zip in the final/
-      directory.  Rename this to your theme name, test, and release.  Enjoy.
+           python build_theme
+
+
+08.)  This will run for a while.  When this is done running, you will have a
+      brand new update.zip in the final/ directory.  Rename this to your theme
+       name, test, and release.  Enjoy.

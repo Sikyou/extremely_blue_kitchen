@@ -1,7 +1,8 @@
 #!/bin/sh
 
 #Hex edits for framework-res and white text
-if [ "`cat ${PROJECT_PATH}/conf/whitetext`" == "TRUE" ]; then
+source ${PROJECT_PATH}/conf/whitetext.txt
+if [ "${whitetexttheme}" == "TRUE" ]; then
   if [ "${BEVERBOSE}" == "Y" ]; then
     echo "Hex Editing for White Text..."
   fi
@@ -12,4 +13,39 @@ if [ "`cat ${PROJECT_PATH}/conf/whitetext`" == "TRUE" ]; then
     rm ${i} > /dev/null 2>&1 || exit 1
     mv new.${i} ${i} > /dev/null 2>&1 || exit 1
   done
+fi
+
+source ${PROJECT_PATH}/conf/progressbar.txt
+if [ "${progressbartheme}" == "TRUE" ]; then
+  if [ "${BEVERBOSE}" == "Y" ]; then
+    echo "Hex Editing Progress Bars..."
+  fi
+  cd ../../res/drawable/ > /dev/null 2>&1 || exit 1
+  bbe -e "s/\x9d\x9e\x9d/\xb7\x97\x85/" progress_horizontal.xml -o new.progress_horizontal.xml > /dev/null 2>&1 || exit 1
+  rm progress_horizontal.xml > /dev/null 2>&1 || exit 1
+  mv new.progress_horizontal.xml progress_horizontal.xml > /dev/null 2>&1 || exit 1
+  bbe -e "s/\x5a\x5d\x5a/\x72\x59\x46/" progress_horizontal.xml -o new.progress_horizontal.xml > /dev/null 2>&1 || exit 1
+  rm progress_horizontal.xml > /dev/null 2>&1 || exit 1
+  mv new.progress_horizontal.xml progress_horizontal.xml > /dev/null 2>&1 || exit 1
+  bbe -e "s/\x74\x76\x74/\x8c\x6f\x5e/" progress_horizontal.xml -o new.progress_horizontal.xml > /dev/null 2>&1 || exit 1
+  rm progress_horizontal.xml > /dev/null 2>&1 || exit 1
+  mv new.progress_horizontal.xml progress_horizontal.xml > /dev/null 2>&1 || exit 1
+  bbe -e "s/\x00\xd3\xff/\xd3\xad\x9a/" progress_horizontal.xml -o new.progress_horizontal.xml > /dev/null 2>&1 || exit 1
+  rm progress_horizontal.xml > /dev/null 2>&1 || exit 1
+  mv new.progress_horizontal.xml progress_horizontal.xml > /dev/null 2>&1 || exit 1
+  bbe -e "s/\x00\xb6\xff/\xc9\x99\x81/" progress_horizontal.xml -o new.progress_horizontal.xml > /dev/null 2>&1 || exit 1
+  rm progress_horizontal.xml > /dev/null 2>&1 || exit 1
+  mv new.progress_horizontal.xml progress_horizontal.xml > /dev/null 2>&1 || exit 1
+  bbe -e "s/\x00\xcb\xff/\xd1\xa8\x94/" progress_horizontal.xml -o new.progress_horizontal.xml > /dev/null 2>&1 || exit 1
+  rm progress_horizontal.xml > /dev/null 2>&1 || exit 1
+  mv new.progress_horizontal.xml progress_horizontal.xml > /dev/null 2>&1 || exit 1
+  bbe -e "s/\x00\xd3\xff/\xd3\xad\x9a/" progress_horizontal.xml -o new.progress_horizontal.xml > /dev/null 2>&1 || exit 1
+  rm progress_horizontal.xml > /dev/null 2>&1 || exit 1
+  mv new.progress_horizontal.xml progress_horizontal.xml > /dev/null 2>&1 || exit 1
+  bbe -e "s/\x00\xb6\xff/\xc9\x99\x81/" progress_horizontal.xml -o new.progress_horizontal.xml > /dev/null 2>&1 || exit 1
+  rm progress_horizontal.xml > /dev/null 2>&1 || exit 1
+  mv new.progress_horizontal.xml progress_horizontal.xml > /dev/null 2>&1 || exit 1
+  bbe -e "s/\x00\xcb\xff/\xd1\xa8\x94/" progress_horizontal.xml -o new.progress_horizontal.xml > /dev/null 2>&1 || exit 1
+  rm progress_horizontal.xml > /dev/null 2>&1 || exit 1
+  mv new.progress_horizontal.xml progress_horizontal.xml > /dev/null 2>&1 || exit 1
 fi

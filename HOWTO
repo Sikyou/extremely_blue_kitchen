@@ -43,7 +43,7 @@ To use the kitchen, you will need to do the following.
       sh scripts/00_build_theme
 
       (If you would like a verbose output during build, type the following command instead)
-      BEVERBOSE=1 sh scripts/00_build_theme
+      BEVERBOSE=Y sh scripts/00_build_theme
 
 07.)  When this is done running, you will have a brand new update.zip in the final/
       directory.  Rename this to your theme name, test, and release.  Enjoy.

@@ -1,0 +1,57 @@
+A proper environment is needed for this kitchen to function as intened.
+
+You will need the following items installed.
+
+Android SDK
+http://developer.android.com/sdk/index.html
+
+Sun Java JDK
+http://java.sun.com/javase/downloads/widget/jdk6.jsp
+
+Python 2.6.* (This has been confirmed working.  I am working on Python 3.*)
+http://www.python.org/download/
+
+Smali/Backsmali
+http://code.google.com/p/smali/downloads/list
+
+Apktool
+http://code.google.com/p/android-apktool/downloads/list
+
+Any other needed binaries are included in the bin/ folder within the kitchen/
+folder.
+
+
+Step-by-Step
+--------------------------------------------------------------------------------
+01.) Install the android sdk.  Most distributions are starting to include this
+     now, so check your package manager.  Once you have it installed, make
+     sure you have "SDK Platform Androi 2.1, API7" installed with it.
+     If you have problems downloading, choose settings, and check "Force https"
+     Go ahead and close this program.
+
+02.) Install the Java SDK.
+     Almost every distribution has this in it's package manager.
+
+03.) Install python
+     If your distirbution doesn't have this in it's package manager, switch
+     distro's.
+
+04.) rename the baksmali-*.jar you downloaded to baksmali.jar
+     rename the smali-*.jar you downloaded to smali.jar
+     Extract the apktool.jar from the apktool*bz2 file you downloaded
+     Make sure you downloaded the aptool-install-linux-* also
+     Unzip this file
+     Copy apktool out
+     Copy autosign, signapk.jar, testkey.pk8, and testkey.x509.pem out of the
+          bin directory in the kitchen/
+     Make sure you downloaded the smali and baksmali wrapper scripts
+     Put all of these files somewhere in your path.  You can even create a
+     new directory and add the directory to your ${PATH}
+
+05.) Make sure the android sdk toolkit is in your ${PATH} as well as the
+     tools directory from the platroms/android-2.1/
+     On gentoo, these locations are /opt/android-sdk-update-manager/tools and
+     /opt/android-sdk-update-manager/platforms/android-2.1/tools/
+
+06.) You now have a properly setup environment.  You might need to log off and
+     log back on for system-wide PATH changes to take effect.

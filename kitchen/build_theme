@@ -84,11 +84,9 @@ if os.path.exists("autosign") == False:
   kitfuns.erroroutput("autosign missing")
   kitfuns.erroroutput("      Please make sure the kitchen is complete")
   sys.exit()
-javasign="java -jar "+kitchenpath+slashadd+"autosign"+slashadd+"signapk.jar"
-javasign=javasign+" "+kitchenpath+slashadd+"autosign"+slashadd+"testkey.x509.pem"
-javasign=javasign+" "+kitchenpath+slashadd+"autosign"+slashadd+"testkey.pk8"
-if os.name == "nt":
-  javasign=re.escape(javasign)
+javasign="java -jar "+os.path.join(kitchenpath, "autosign", "signapk.jar")
+javasign=javasign+" "+os.path.join(kitchenpath, "autosign", "testkey.x509.pem")
+javasign=javasign+" "+os.path.join(kitchenpath, "autosign", "testkey.pk8")
 
 """**************************************************************************"""
 """We'll start by extracting the default rom"""

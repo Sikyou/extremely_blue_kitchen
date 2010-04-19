@@ -414,10 +414,10 @@ if os.path.exists("final") == False:
   os.mkdir("final", 0755)
 os.chdir("rom_newstruct")
 zargs=shlex.split("zip -q0 update.zip -r .")
-shutil.move("update.zip", kitchenpath+slashadd+"final"+slashadd+"update.zip")
 if subprocess.Popen(zargs).wait() != 0:
   kitfuns.erroroutput("Could Not Build Theme Zip")
   sys.exit()
+shutil.move("update.zip", kitchenpath+slashadd+"final"+slashadd+"update.zip")
 os.chdir(kitchenpath+slashadd+"final")
 kitfuns.verboseoutput("Signing Theme Zip")
 zargs=shlex.split(autosign+" update.zip new.update.zip")

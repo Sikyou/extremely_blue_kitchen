@@ -27,11 +27,13 @@ if os.name == "nt":
   apktool="apktool.bat"
   smali="smali.bat"
   baksmali="baksmali.bat"
+  autosign="autosign.bat"
 else:
   slashadd="/"
   apktool="apktool"
   smali="smali"
   baksmali="baksmali"
+  autosign="autosign"
 
 """Check if we are in the base kitchen directory.  If we aren't, we will
    exit the program."""
@@ -76,17 +78,6 @@ def eimgcopy( srcdir, destdir):
    just because I am a stickler for output formatting"""
 """**************************************************************************"""
 print ""
-
-"""**************************************************************************"""
-"""Build the signing command"""
-"""**************************************************************************"""
-if os.path.exists("autosign") == False:
-  kitfuns.erroroutput("autosign missing")
-  kitfuns.erroroutput("      Please make sure the kitchen is complete")
-  sys.exit()
-javasign="java -jar "+os.path.join(kitchenpath, "autosign", "signapk.jar")
-javasign=javasign+" "+os.path.join(kitchenpath, "autosign", "testkey.x509.pem")
-javasign=javasign+" "+os.path.join(kitchenpath, "autosign", "testkey.pk8")
 
 """**************************************************************************"""
 """We'll start by extracting the default rom"""
@@ -293,7 +284,7 @@ if subprocess.Popen(zargs).wait() != 0:
   kitfuns.erroroutput("Could Not Recompress framework-res.apk")
   sys.exit()
 kitfuns.pverboseoutput("Signing framework-res.apk")
-zargs=shlex.split(javasign+" framework-res.apk new.framework-res.apk")
+zargs=shlex.split(autosign+" framework-res.apk new.framework-res.apk")
 if subprocess.Popen(zargs).wait() != 0:
   kitfuns.erroroutput("Could Not Sign framework-res.apk")
   sys.exit()
@@ -399,7 +390,7 @@ for apkf in sorted(config.options("includeapp")):
       kitfuns.erroroutput("Could Not Recompress "+apkf+".apk")
       sys.exit()
     kitfuns.pverboseoutput("Signing "+apkf+".apk")
-    zargs=shlex.split(javasign+" "+apkf+".apk new."+apkf+".apk")
+    zargs=shlex.split(autosign+" "+apkf+".apk new."+apkf+".apk")
     if subprocess.Popen(zargs, stdout=subprocess.PIPE, stderr=subprocess.PIPE).wait() != 0:
       kitfuns.erroroutput("Could Not Sign "+apkf+".apk")
       sys.exit()
@@ -422,13 +413,14 @@ kitfuns.verboseoutput("Building Theme Zip")
 if os.path.exists("final") == False:
   os.mkdir("final", 0755)
 os.chdir("rom_newstruct")
-zargs=shlex.split("zip -q0 "+kitchenpath+slashadd+"final"+slashadd+"update.zip -r .")
+zargs=shlex.split("zip -q0 update.zip -r .")
+shutil.move("update.zip", kitchenpath+slashadd+"final"+slashadd+"update.zip")
 if subprocess.Popen(zargs).wait() != 0:
   kitfuns.erroroutput("Could Not Build Theme Zip")
   sys.exit()
 os.chdir(kitchenpath+slashadd+"final")
 kitfuns.verboseoutput("Signing Theme Zip")
-zargs=shlex.split(javasign+" update.zip new.update.zip")
+zargs=shlex.split(autosign+" update.zip new.update.zip")
 if subprocess.Popen(zargs, stdout=subprocess.PIPE, stderr=subprocess.PIPE).wait() != 0:
   kitfuns.erroroutput("Could Not Sign Theme Zip")
   sys.exit()

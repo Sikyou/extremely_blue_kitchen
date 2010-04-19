@@ -21,9 +21,9 @@ import __builtin__
 
 config= ConfigParser.ConfigParser()
 config.optionxform=str
-config.read(kitchenpath+slashadd+"conf"+slashadd+"kitchen.ini")
+config.read(os.path.join(kitchenpath, "conf", "kitchen.ini"))
 
-sys.path.append(kitchenpath+slashadd+"include")
+sys.path.append(os.path.join(kitchenpath, "include"))
 
 if os.name == "nt":
   import ctypes

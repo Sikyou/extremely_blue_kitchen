@@ -31,7 +31,7 @@ def custom_commands_run( apkname, apkpath, kitchenpath, apktool, smali, baksmali
   if subprocess.Popen(zargs, stdout=subprocess.PIPE, stderr=subprocess.PIPE).wait() != 0:
     kitfuns.erroroutput("Could Not apktool"+apkname+".apk")
     sys.exit()
-  os.chdir("toold"+slashadd+"smali"+slashadd+"com"+slashadd+"android"+slashadd+"launcher2")
+  os.chdir(os.path.join("toold", "smali", "com", "android", "launcher2"))
   kitfuns.fstrrep("Utilities.smali", "const/16 v4, -0x3d00", "const v4, -0x"+l2pcolor)
   kitfuns.fstrrep("Utilities.smali", "const/16 v4, -0x7200", "const v4, -0x"+l2fcolor)
   os.chdir(apkpath)
@@ -39,8 +39,8 @@ def custom_commands_run( apkname, apkpath, kitchenpath, apktool, smali, baksmali
   if subprocess.Popen(zargs, stdout=subprocess.PIPE, stderr=subprocess.PIPE).wait() != 0:
     kitfuns.erroroutput("Could Not apktool Rebuild "+apkname+".apk")
     sys.exit()
-  os.chdir("toold"+slashadd+"dist")
-  shutil.move("out.apk", apkpath+slashadd+"out.apk")
+  os.chdir(os.path.join("toold", "dist"))
+  shutil.move("out.apk", os.path.join(apkpath, "out.apk"))
   os.chdir(apkpath)
   shutil.rmtree("toold")
   zargs=shlex.split("unzip -qq out.apk -d toold")
@@ -48,6 +48,5 @@ def custom_commands_run( apkname, apkpath, kitchenpath, apktool, smali, baksmali
     kitfuns.erroroutput("Could Not Unzip out.apk")
     sys.exit()
   os.remove("out.apk")
-  shutil.move("toold"+slashadd+"classes.dex",
-              apkname+slashadd+"classes.dex")
+  shutil.move(os.path.join("toold", "classes.dex"), os.path.join(apkname, "classes.dex"))
   shutil.rmtree("toold")

@@ -30,17 +30,17 @@ def custom_commands_run( apkname, apkpath, kitchenpath, apktool, smali, baksmali
   if subprocess.Popen(zargs, stdout=subprocess.PIPE, stderr=subprocess.PIPE).wait() != 0:
     kitfuns.erroroutput("Could Not apktool"+apkname+".apk")
     sys.exit()
-  os.chdir("toold"+slashadd+"res"+slashadd+"color")
+  os.chdir(os.path.join("toold", "res", "color"))
   kitfuns.fstrrep("tab_indicator_text.xml", "808080", playerbackground)
-  os.chdir(apkpath+slashadd+"toold"+slashadd+"res"+slashadd+"layout-finger")
+  os.chdir(os.path.join(apkpath, "toold", "res", "layout-finger"))
   kitfuns.fstrrep("audio_player_common.xml", "5a5a5a", playerbackground)
   os.chdir(apkpath)
   zargs=shlex.split(apktool+" b toold")
   if subprocess.Popen(zargs, stdout=subprocess.PIPE, stderr=subprocess.PIPE).wait() != 0:
     kitfuns.erroroutput("Could Not apktool Rebuild "+apkname+".apk")
     sys.exit()
-  os.chdir("toold"+slashadd+"dist")
-  shutil.move("out.apk", apkpath+slashadd+"out.apk")
+  os.chdir(os.path.join("toold", "dist"))
+  shutil.move("out.apk", os.path.join(apkpath, "out.apk"))
   os.chdir(apkpath)
   shutil.rmtree("toold")
   zargs=shlex.split("unzip -qq out.apk -d toold")
@@ -48,8 +48,8 @@ def custom_commands_run( apkname, apkpath, kitchenpath, apktool, smali, baksmali
     kitfuns.erroroutput("Could Not Unzip out.apk")
     sys.exit()
   os.remove("out.apk")
-  shutil.move("toold"+slashadd+"res"+slashadd+"color"+slashadd+"tab_indicator_text.xml",
-              apkname+slashadd+"res"+slashadd+"color"+slashadd+"tab_indicator_text.xml")
-  shutil.move("toold"+slashadd+"res"+slashadd+"layout-finger"+slashadd+"audio_player_common.xml",
-              apkname+slashadd+"res"+slashadd+"layout-finger"+slashadd+"audio_player_common.xml")
+  shutil.move(os.path.join("toold", "res", "color", "tab_indicator_text.xml"),
+              os.path.join(apkname, "res", "color", "tab_indicator_text.xml"))
+  shutil.move(os.path.join("toold", "res", "layout-finger", "audio_player_common.xml"),
+              os.path.join(apkname, "res", "layout-finger", "audio_player_common.xml"))
   shutil.rmtree("toold")

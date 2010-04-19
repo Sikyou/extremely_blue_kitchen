@@ -26,27 +26,18 @@ playerbackground="293e66"
 """add your custom commands here"""
 def custom_commands_run( apkname, apkpath, kitchenpath, apktool, smali, baksmali ):
   os.chdir(apkpath)
-  zargs=shlex.split(apktool+" d "+apkname+".apk toold")
-  if subprocess.Popen(zargs, stdout=subprocess.PIPE, stderr=subprocess.PIPE).wait() != 0:
-    kitfuns.erroroutput("Could Not apktool"+apkname+".apk")
-    sys.exit()
+  kitfuns.subproc(False, apktool+" d "+apkname+".apk toold", "Could Not apktool"+apkname+".apk")
   os.chdir(os.path.join("toold", "res", "color"))
   kitfuns.fstrrep("tab_indicator_text.xml", "808080", playerbackground)
   os.chdir(os.path.join(apkpath, "toold", "res", "layout-finger"))
   kitfuns.fstrrep("audio_player_common.xml", "5a5a5a", playerbackground)
   os.chdir(apkpath)
-  zargs=shlex.split(apktool+" b toold")
-  if subprocess.Popen(zargs, stdout=subprocess.PIPE, stderr=subprocess.PIPE).wait() != 0:
-    kitfuns.erroroutput("Could Not apktool Rebuild "+apkname+".apk")
-    sys.exit()
+  kitfuns.subproc(False, apktool+" b toold", "Could Not apktool"+apkname+".apk")
   os.chdir(os.path.join("toold", "dist"))
   shutil.move("out.apk", os.path.join(apkpath, "out.apk"))
   os.chdir(apkpath)
   shutil.rmtree("toold")
-  zargs=shlex.split("unzip -qq out.apk -d toold")
-  if subprocess.Popen(zargs).wait() != 0:
-    kitfuns.erroroutput("Could Not Unzip out.apk")
-    sys.exit()
+  kitfuns.subproc(True, "unzip -qq out.apk -d toold", "Could Not Unzip out.apk")
   os.remove("out.apk")
   shutil.move(os.path.join("toold", "res", "color", "tab_indicator_text.xml"),
               os.path.join(apkname, "res", "color", "tab_indicator_text.xml"))

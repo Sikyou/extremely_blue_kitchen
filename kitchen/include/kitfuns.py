@@ -92,3 +92,20 @@ def fstrrep( filen, smatch, sreplace ):
   os.remove(filen)
   os.rename(nfilen, filen)
   return
+
+"""**************************************************************************"""
+"""repetative process caller"""
+"""**************************************************************************"""
+def subproc(zip, zargs, failstatement):
+  if zip == True:
+    if subprocess.Popen(shlex.split(zargs)).wait() != 0:
+      erroroutput(failstatement)
+      sys.exit()
+    else:
+      return
+  else:
+    if subprocess.Popen(shlex.split(zargs), stdout=subprocess.PIPE, stderr=subprocess.PIPE).wait() != 0:
+      erroroutput(failstatement)
+      sys.exit()
+    else:
+      return

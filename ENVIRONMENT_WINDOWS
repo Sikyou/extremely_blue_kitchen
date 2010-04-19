@@ -93,3 +93,7 @@ Step-by-Step
 07.) You now have a properly setup environment.
      You might need to log off and then log on for changes to your %PATH% to
          take effect.
+
+08.) If you decide to place your files somewhere other than c:\androidtools,
+     be sure to edit the batch files to reflect your change.  Windows sux
+     at dynamic library allocation.
